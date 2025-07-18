@@ -1,0 +1,83 @@
+// This is a sample backend API endpoint for claiming a mystery box
+// You would implement this in your backend
+
+const MysteryBox = require("../../models/mysteryBoxModel")
+const Product = require("../../models/productModel")
+
+const claimMysteryBoxController = async (req, res) => {
+  try {
+    const { boxId } = req.body
+    const userId = req.userId // Assuming you have authentication middleware
+
+    // Find the mystery box
+    const mysteryBox = await MysteryBox.findOne({
+      _id: boxId,
+      userId: userId,
+      claimed: false,
+    })
+
+    if (!mysteryBox) {
+      return res.status(404).json({
+        success: false,
+        message: "Mystery box not found or already claimed",
+      })
+    }
+
+    // Get random products from database
+    const products = await Product.find({}).limit(20)
+
+    // If no products found, return error
+    if (!products || products.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No products available for mystery box",
+      })
+    }
+
+    // Select a random product based on box type
+    // Higher tier boxes have better chances for premium products
+    let selectedProduct
+
+    if (mysteryBox.boxType === "Ultimate") {
+      // For Ultimate, select from top 30% of products by price
+      const sortedProducts = [...products].sort((a, b) => b.price - a.price)
+      const topProducts = sortedProducts.slice(0, Math.ceil(sortedProducts.length * 0.3))
+      selectedProduct = topProducts[Math.floor(Math.random() * topProducts.length)]
+    } else if (mysteryBox.boxType === "Premium") {
+      // For Premium, select from top 60% of products by price
+      const sortedProducts = [...products].sort((a, b) => b.price - a.price)
+      const midProducts = sortedProducts.slice(0, Math.ceil(sortedProducts.length * 0.6))
+      selectedProduct = midProducts[Math.floor(Math.random() * midProducts.length)]
+    } else {
+      // For Basic, select any random product
+      selectedProduct = products[Math.floor(Math.random() * products.length)]
+    }
+
+    // Mark the box as claimed
+    mysteryBox.claimed = true
+    mysteryBox.claimedProduct = selectedProduct._id
+    mysteryBox.claimedAt = new Date()
+    await mysteryBox.save()
+
+    // Return the claimed product
+    res.status(200).json({
+      success: true,
+      message: "Mystery box claimed successfully",
+      claimedProduct: {
+        _id: selectedProduct._id,
+        productName: selectedProduct.name,
+        description: selectedProduct.description,
+        productImage: selectedProduct.images,
+        worth: `₹${selectedProduct.price}`,
+      },
+    })
+  } catch (error) {
+    console.error("Error claiming mystery box:", error)
+    res.status(500).json({
+      success: false,
+      message: "Error claiming mystery box",
+    })
+  }
+}
+
+module.exports = claimMysteryBoxController

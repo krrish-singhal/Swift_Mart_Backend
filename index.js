@@ -18,7 +18,7 @@ app.post('/api/webhook', express.raw({ type: 'application/json' }), webhookHandl
 
 // Middlewares
 app.use(cors({
-    origin: process.env.FRONTEND_URL || "https://swift-nfsuvzkby-krrish-singhals-projects.vercel.app",
+    origin: process.env.FRONTEND_URL || "https://swift-delta-nine.vercel.app",
     credentials: true,
     allowedHeaders: ["Content-Type", "Authorization"]
 }));

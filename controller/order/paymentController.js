@@ -50,8 +50,8 @@ const paymentController = async (req, res) => {
       payment_method_types: ["card"],
       line_items: lineItems,
       mode: "payment",
-      success_url: `${process.env.FRONTEND_URL || "http://localhost:5173"}/success?payment=success`,
-      cancel_url: `${process.env.FRONTEND_URL || "http://localhost:5173"}/cart`,
+      success_url: `${process.env.FRONTEND_URL || "https://swift-3of27ebi7-krrish-singhals-projects.vercel.app"}/success?payment=success`,
+      cancel_url: `${process.env.FRONTEND_URL || "https://swift-3of27ebi7-krrish-singhals-projects.vercel.app"}/cart`,
       shipping_address_collection: {
         allowed_countries: ["IN", "US", "CA", "GB"],
       },

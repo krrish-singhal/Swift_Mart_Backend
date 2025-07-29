@@ -72,7 +72,7 @@ const forgotPasswordController = async (req, res) => {
     user.resetTokenExpiry = resetTokenExpiry;
     await user.save();
 
-    const resetUrl = `${process.env.FRONTEND_URL || "http://localhost:5173"}/reset-password/${resetToken}`;
+    const resetUrl = `${process.env.FRONTEND_URL || "https://swift-3of27ebi7-krrish-singhals-projects.vercel.app"}/reset-password/${resetToken}`;
 
     const mailOptions = {
       from: `"E-Commerce Support" <${process.env.EMAIL_USER}>`, // Better format
